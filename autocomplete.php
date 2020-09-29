@@ -54,17 +54,42 @@ class Autocomplete {
     public function list_post_callback() {
         global $wpdb;
 
-        $post = $_POST['submit'];
-        $response = array();
+        $spost = $_POST['submit'];
 
-        $query = new WP_Query( array( 'post_type' => 'post', 's' =>  $post, 'post_status' => 'publish') );        
-        while ( $query->have_posts() ) {
-            $query->the_post();
-            array_push($response, get_the_title());
+        $paged = (get_query_var('page')) ? get_query_var('page') : 1;        
+        $query = new WP_Query( 
+            array( 
+                'post_type' => 'post', 
+                's' =>  $spost, 
+                'post_status' => 'publish',
+                'posts_per_page' => 2,
+                'paged' => $paged
+            ) 
+        );
+
+        if($query->have_posts()) {
+
+            while ( $query->have_posts() ) {
+                $query->the_post();
+                echo "<div><h2>".get_the_title()."</h2></div>";
+            }
+
+            $total_pages = $query->max_num_pages;
+            
+            if ($total_pages > 1){
+                $current_page = max(1, get_query_var('page'));
+                echo paginate_links(array(
+                    'base' => get_pagenum_link(1) . '%_%',
+                    'format' => '/page/%#%',
+                    'current' => $current_page,
+                    'total' => $total_pages,
+                    'prev_text'    => __('prev'),
+                    'next_text'    => __('next'),
+                ));
+            }
         }
         wp_reset_postdata();
 
-        echo json_encode($response);
         wp_die();
     }
 

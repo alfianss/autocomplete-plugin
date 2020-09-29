@@ -28,14 +28,9 @@ jQuery(document).ready(function($) {
 				'action': 'list_post',
 				'submit': $('#search').val(),
 			},
-			dataType: 'json',
-			success: function(data){	
-				var html = '';
-				$.each(data, function(index, item){
-					html += '<div><h2>'+item+'</h2></div>';
-				});				
-				
-				$('#result').html(html);
+			dataType: 'html',
+			success: function(data){			
+				$('#result').html(data);
 			}
 		});
 	});
