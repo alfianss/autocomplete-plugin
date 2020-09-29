@@ -33,8 +33,20 @@ class Autocomplete {
     }
 
     public function autocomplete_callback() {
-        // echo "hello";
-        return true;
+        global $wpdb;
+
+        $search = $_POST['search'];
+        $response = array();
+
+        $query = new WP_Query( array( 'post_type' => 'post', 's' =>  $search, 'post_status' => 'publish') );        
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            array_push($response, get_the_title());
+        }
+        wp_reset_postdata();
+
+        echo json_encode($response);
+        wp_die();
     }
 
 }
@@ -43,7 +55,7 @@ $autocomplete = new Autocomplete();
 
 add_action('wp_enqueue_scripts', array($autocomplete, 'enqueue_autocomplete'));
 
-add_action( 'wp_ajax_autocomplete_post', 'autocomplete_callback' );
-add_action( 'wp_ajax_nopriv_autocomplete_post', 'autocomplete_callback' );
+add_action( 'wp_ajax_autocomplete_post', array($autocomplete,'autocomplete_callback') );
+add_action( 'wp_ajax_nopriv_autocomplete_post', array($autocomplete,'autocomplete_callback') );
 
 add_shortcode('wp6_training', array($autocomplete, 'wp6_training_sc'));
