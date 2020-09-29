@@ -62,7 +62,7 @@ class Autocomplete {
                 'post_type' => 'post', 
                 's' =>  $spost, 
                 'post_status' => 'publish',
-                'posts_per_page' => 2,
+                'posts_per_page' => 5,
                 'paged' => $paged
             ) 
         );
@@ -71,7 +71,7 @@ class Autocomplete {
 
             while ( $query->have_posts() ) {
                 $query->the_post();
-                echo "<div><h2>".get_the_title()."</h2></div>";
+                echo "<div><h2>".get_the_title()."</h2><span>".get_the_content()."</span></div>";
             }
 
             $total_pages = $query->max_num_pages;
